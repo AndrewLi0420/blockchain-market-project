@@ -3,82 +3,233 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
 <title>Jailbreakers</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e0a83e' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='11' x='3' y='11' rx='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 9.9-1'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0b0e14; --panel: #131722; --border: #232a3b; --text: #dbe2f0;
-    --dim: #8b94a7; --accent: #4f8cff; --green: #2ecc8f; --red: #ff5c74;
-    --amber: #ffb454; --purple: #b48cff;
+    --bg: #100f0d;
+    --surface: #191714;
+    --surface-2: #211e1a;
+    --border: #2b2825;
+    --border-strong: #3b3733;
+    --text: #ece7df;
+    --muted: #a89f92;
+    --dim: #837b70;
+    --accent: #e0a83e;
+    --accent-hi: #f2be5b;
+    --accent-tint: rgba(224,168,62,0.12);
+    --green: #6fbf95;
+    --green-tint: rgba(111,191,149,0.12);
+    --red: #d9756a;
+    --red-tint: rgba(217,117,106,0.12);
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --radius: 8px;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--text);
-         font: 14px/1.5 ui-monospace, "SF Mono", Menlo, monospace; }
-  .wrap { max-width: 1180px; margin: 0 auto; padding: 24px 16px 64px; }
-  h1 { font-size: 22px; margin: 0; letter-spacing: 1px; }
-  h1 .tag { color: var(--accent); }
-  .sub { color: var(--dim); margin: 4px 0 8px; font-size: 12px; }
-  .sub a { color: var(--accent); text-decoration: none; }
-  .blurb { color: var(--dim); font-size: 12px; max-width: 820px; margin: 0 0 18px; }
-  .blurb b { color: var(--text); font-weight: 600; }
-  .meta { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 20px; font-size: 12px; color: var(--dim); }
-  .meta b { color: var(--text); font-weight: 600; }
-  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 2px; color: var(--dim); margin: 28px 0 10px; }
-  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; }
-  table { border-collapse: collapse; width: 100%; min-width: 900px; }
-  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; vertical-align: top; }
-  td.claim { white-space: normal; min-width: 260px; }
-  th { color: var(--dim); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
-  tr:last-child td { border-bottom: 0; }
-  .pill { display: inline-block; padding: 1px 8px; border-radius: 99px; font-size: 11px; border: 1px solid; }
-  .s0 { color: var(--accent); border-color: var(--accent); }
-  .s1 { color: var(--amber); border-color: var(--amber); }
-  .s2 { color: var(--red); border-color: var(--red); }
-  .s3 { color: var(--green); border-color: var(--green); }
-  .s4, .s5 { color: var(--dim); border-color: var(--dim); }
-  .cat { color: var(--purple); font-size: 11px; }
-  .ok { color: var(--green); } .bad { color: var(--red); }
-  a.mono { color: var(--accent); text-decoration: none; }
-  .err { color: var(--red); padding: 12px; }
-  .dim { color: var(--dim); }
-  .rate { display: inline-flex; align-items: center; gap: 6px; }
-  .bar { height: 6px; width: 90px; background: var(--border); border-radius: 3px; overflow: hidden; display: inline-block; vertical-align: middle; }
-  .bar i { display: block; height: 100%; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--sans); font-size: 14px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  }
+  a { color: inherit; text-decoration: none; }
+  .mono { font-family: var(--mono); font-feature-settings: "tnum" 1; }
+  .num { font-variant-numeric: tabular-nums; }
+  .ico { width: 16px; height: 16px; flex: none; vertical-align: middle; }
+  .ico-sm { width: 14px; height: 14px; }
+  .ico-lg { width: 22px; height: 22px; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 32px 24px 72px; }
+
+  /* ---- masthead ---- */
+  header { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px;
+           flex-wrap: wrap; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+  .brand { display: flex; gap: 14px; align-items: center; }
+  .mark { width: 40px; height: 40px; flex: none; display: grid; place-items: center;
+          border: 1px solid var(--border-strong); border-radius: 10px; color: var(--accent);
+          background: var(--surface); }
+  .mark svg { width: 20px; height: 20px; }
+  h1 { font-size: 21px; font-weight: 700; letter-spacing: -0.03em; margin: 0; line-height: 1.1; }
+  h1 .accent { color: var(--accent); }
+  .tagline { color: var(--muted); font-size: 12.5px; margin: 3px 0 0; letter-spacing: -0.005em; }
+  .chain { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .net { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; color: var(--muted);
+         padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green);
+         box-shadow: 0 0 0 3px var(--green-tint); }
+  .addr { display: inline-flex; align-items: center; gap: 6px; font-size: 12px;
+          padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px;
+          color: var(--muted); transition: border-color .15s, color .15s; }
+  .addr:hover { border-color: var(--border-strong); color: var(--text); }
+  .addr .ico { color: var(--dim); }
+  button.refresh { display: inline-flex; align-items: center; gap: 7px; font-family: var(--sans);
+    font-size: 12px; font-weight: 500; color: var(--text); cursor: pointer;
+    padding: 6px 12px; border: 1px solid var(--border-strong); border-radius: 6px;
+    background: var(--surface); transition: background .15s, border-color .15s; }
+  button.refresh:hover { background: var(--surface-2); border-color: #4a453f; }
+  button.refresh:active { transform: translateY(1px); }
+  button.refresh:disabled { opacity: .55; cursor: default; }
+  button.refresh .ico { color: var(--accent); }
+  .spin { animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ---- mechanism strip ---- */
+  .mech { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin: 24px 0 0;
+          background: var(--border); border: 1px solid var(--border); border-radius: var(--radius);
+          overflow: hidden; }
+  .step { background: var(--surface); padding: 16px 18px; display: flex; gap: 12px; align-items: flex-start; }
+  .step .no { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--accent);
+              letter-spacing: .04em; padding-top: 1px; }
+  .step .ico { color: var(--muted); margin-top: 1px; }
+  .step h3 { font-size: 12.5px; font-weight: 600; margin: 0 0 2px; letter-spacing: -0.01em; }
+  .step p { font-size: 11.5px; color: var(--muted); margin: 0; line-height: 1.45; }
+
+  /* ---- stat tiles ---- */
+  .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin: 12px 0 0; }
+  .tile { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+          padding: 16px; transition: border-color .15s; }
+  .tile:hover { border-color: var(--border-strong); }
+  .tile .top { display: flex; justify-content: space-between; align-items: center; color: var(--dim); }
+  .tile .lbl { font-size: 10.5px; font-weight: 500; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+  .tile .val { font-size: 28px; font-weight: 650; letter-spacing: -0.03em; margin-top: 10px; line-height: 1; }
+  .tile.skel .val { color: transparent; }
+
+  /* ---- sections ---- */
+  section { margin-top: 40px; }
+  .sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  h2 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin: 0; }
+  .sec-note { font-size: 11.5px; color: var(--dim); }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; min-width: 940px; }
+  thead th { text-align: left; padding: 11px 14px; font-size: 10.5px; font-weight: 600;
+             text-transform: uppercase; letter-spacing: .06em; color: var(--dim);
+             border-bottom: 1px solid var(--border); background: var(--bg); white-space: nowrap; }
+  tbody td { padding: 12px 14px; font-size: 13px; border-bottom: 1px solid var(--border);
+             white-space: nowrap; vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr { transition: background .12s; }
+  tbody tr.row:hover { background: var(--surface-2); }
+  td.claim { white-space: normal; min-width: 280px; }
+  .claim .title { font-weight: 500; letter-spacing: -0.01em; }
+  .claim .meta2 { font-family: var(--mono); font-size: 11px; color: var(--dim); margin-top: 3px; }
+  .model { font-weight: 600; letter-spacing: -0.01em; }
+  .cat { font-family: var(--mono); font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; }
+  .id { font-family: var(--mono); color: var(--dim); font-size: 12px; }
+
+  .pill { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 500;
+          padding: 3px 9px; border-radius: 5px; border: 1px solid; letter-spacing: .01em; }
+  .pill::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+  .st-0 { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 35%, transparent); background: var(--accent-tint); }
+  .st-1 { color: var(--muted); border-color: var(--border-strong); background: var(--surface-2); }
+  .st-2 { color: var(--red); border-color: color-mix(in srgb, var(--red) 35%, transparent); background: var(--red-tint); }
+  .st-3 { color: var(--green); border-color: color-mix(in srgb, var(--green) 35%, transparent); background: var(--green-tint); }
+  .st-4, .st-5 { color: var(--dim); border-color: var(--border); background: transparent; }
+
+  .rate { display: inline-flex; align-items: center; gap: 8px; }
+  .bar { width: 64px; height: 5px; border-radius: 3px; background: var(--border); overflow: hidden; flex: none; }
+  .bar i { display: block; height: 100%; border-radius: 3px; }
+  .rate .pctv { font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .txt-green { color: var(--green); } .txt-red { color: var(--red); } .txt-muted { color: var(--muted); } .txt-dim { color: var(--dim); }
+  .link { display: inline-flex; align-items: center; gap: 5px; font-family: var(--mono); font-size: 12px;
+          color: var(--muted); transition: color .15s; }
+  .link:hover { color: var(--accent); }
+  .link .ico { color: var(--dim); transition: color .15s; }
+  .link:hover .ico { color: var(--accent); }
+  .verdict { font-size: 12px; font-weight: 500; }
+
+  /* ---- states ---- */
+  .state { padding: 44px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+  .state .ico { width: 26px; height: 26px; color: var(--dim); }
+  .state h4 { font-size: 13px; font-weight: 600; margin: 12px 0 4px; color: var(--text); }
+  .state p { font-size: 12px; color: var(--muted); margin: 0; }
+  .banner { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--red-tint);
+            border-bottom: 1px solid color-mix(in srgb, var(--red) 30%, transparent); color: var(--text); font-size: 12.5px; }
+  .banner .ico { color: var(--red); }
+  .banner button { margin-left: auto; font-family: var(--sans); font-size: 12px; font-weight: 500; color: var(--text);
+    background: var(--surface); border: 1px solid var(--border-strong); border-radius: 5px; padding: 5px 11px; cursor: pointer; }
+  .banner button:hover { background: var(--surface-2); }
+  .skel-bar { height: 11px; border-radius: 3px; background: var(--surface-2); animation: pulse 1.4s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+  @media (prefers-reduced-motion: reduce) { .skel-bar, .spin { animation: none; } }
+
+  footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border);
+           display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+           font-size: 11.5px; color: var(--dim); }
+  .upd { display: inline-flex; align-items: center; gap: 6px; }
+
+  @media (max-width: 820px) {
+    .wrap { padding: 24px 16px 56px; }
+    .mech { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 460px) { .stats { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>JAIL<span class="tag">BREAKERS</span></h1>
-  <div class="sub">on-chain marketplace for reproducible model-failure findings · hashlock disclosure · staked, re-measured claims ·
-    contract <a id="contract-link" class="mono" href="#" target="_blank" rel="noopener"></a> on Sepolia</div>
-  <p class="blurb">Red-teamers sell <b>encrypted eval suites</b> that make a named model exhibit a failure (a data leak,
-    a jailbreak, a hallucination). Buyers — AI labs and deployers — pay <b>before</b> seeing the prompts. Payment releases
-    on the seller's on-chain key reveal (that reveal is coordinated disclosure). After the resolution date a resolver
-    <b>re-runs the suite against the model</b> and reports the measured failure rate: overfitted findings get their stake
-    slashed and buyers rebated; malformed findings are refunded from stake via an on-chain dispute the contract adjudicates itself.
-    Reputation counts only <b>sold</b> findings, so it can't be farmed.</p>
-  <div class="meta">
-    <span>findings <b id="m-listings">—</b></span>
-    <span>disclosed <b id="m-revealed">—</b></span>
-    <span>reproduced <b id="m-repro">—</b></span>
-    <span>slashed <b id="m-slashed">—</b></span>
-    <span>disputed <b id="m-invalid">—</b></span>
-    <span class="dim" id="m-updated"></span>
+  <header>
+    <div class="brand">
+      <span class="mark" data-ico="unlock"></span>
+      <div>
+        <h1>JAIL<span class="accent">BREAKERS</span></h1>
+        <p class="tagline">On-chain market for reproducible model-failure findings</p>
+      </div>
+    </div>
+    <div class="chain">
+      <span class="net"><span class="dot"></span> Sepolia testnet</span>
+      <a class="addr mono" id="contract-link" href="#" target="_blank" rel="noopener"></a>
+      <button class="refresh" id="refresh" type="button"><span class="ico" data-ico="refresh-cw"></span> Refresh</button>
+    </div>
+  </header>
+
+  <div class="mech">
+    <div class="step"><span class="no">01</span><span class="ico" data-ico="lock"></span><div><h3>Encrypt &amp; list</h3><p>A red-teamer encrypts the prompt suite, pins it to IPFS, and stakes a claim on-chain.</p></div></div>
+    <div class="step"><span class="no">02</span><span class="ico" data-ico="banknote"></span><div><h3>Pay &amp; disclose</h3><p>A buyer escrows payment sight-unseen; the seller reveals the key, releasing funds.</p></div></div>
+    <div class="step"><span class="no">03</span><span class="ico" data-ico="repeat"></span><div><h3>Re-run &amp; settle</h3><p>The resolver re-runs the suite against the model; overfitted findings are slashed.</p></div></div>
   </div>
 
-  <h2>Findings</h2>
-  <div class="card"><table id="t-listings">
-    <thead><tr><th>#</th><th>Model</th><th>Category</th><th class="claim">Public claim</th><th>Claimed</th><th>Measured</th><th>Trials</th><th>Price</th><th>Stake</th><th>Buyers</th><th>Status</th><th>Resolves</th><th>Seller</th></tr></thead>
-    <tbody><tr><td colspan="13" class="dim">loading…</td></tr></tbody>
-  </table></div>
+  <div class="stats" id="stats">
+    <div class="tile" data-k="listings"><div class="top"><span class="lbl">Findings</span><span class="ico" data-ico="target"></span></div><div class="val num">—</div></div>
+    <div class="tile" data-k="revealed"><div class="top"><span class="lbl">Disclosed</span><span class="ico" data-ico="eye"></span></div><div class="val num">—</div></div>
+    <div class="tile" data-k="repro"><div class="top"><span class="lbl">Reproduced</span><span class="ico" data-ico="circle-check"></span></div><div class="val num txt-green">—</div></div>
+    <div class="tile" data-k="slashed"><div class="top"><span class="lbl">Slashed</span><span class="ico" data-ico="trending-down"></span></div><div class="val num txt-red">—</div></div>
+    <div class="tile" data-k="invalid"><div class="top"><span class="lbl">Disputed</span><span class="ico" data-ico="ban"></span></div><div class="val num txt-red">—</div></div>
+  </div>
 
-  <h2>Red-teamer reputation</h2>
-  <div class="card"><table id="t-sellers">
-    <thead><tr><th>Seller</th><th>Reproduction rate</th><th>Reproduced</th><th>Failed</th><th>Sold+resolved</th><th>Listed</th><th>Disputed</th><th>Buyer-agent verdict</th></tr></thead>
-    <tbody><tr><td colspan="8" class="dim">loading…</td></tr></tbody>
-  </table></div>
+  <section>
+    <div class="sec-head"><h2>Findings</h2><span class="sec-note">Encrypted until disclosure · re-measured at resolution</span></div>
+    <div class="card"><div class="scroll"><table>
+      <thead><tr>
+        <th>#</th><th>Model</th><th>Category</th><th>Public claim</th><th>Claimed</th><th>Measured</th>
+        <th>Trials</th><th>Price</th><th>Stake</th><th>Buyers</th><th>Status</th><th>Resolves</th><th>Seller</th>
+      </tr></thead>
+      <tbody id="t-listings"></tbody>
+    </table></div></div>
+  </section>
 
-  <p class="dim" style="font-size:12px">Read-only dashboard — the autonomous red-teamer / buyer / resolver agents do the transacting.
-     Encrypted suites live on IPFS (CID on-chain); prompts appear only after the on-chain reveal. Auto-refreshes every 15s.</p>
+  <section>
+    <div class="sec-head"><h2>Red-teamer reputation</h2><span class="sec-note">Earned only on sold findings — can't be farmed</span></div>
+    <div class="card"><div class="scroll"><table>
+      <thead><tr>
+        <th>Seller</th><th>Reproduction rate</th><th>Reproduced</th><th>Failed</th>
+        <th>Sold + resolved</th><th>Listed</th><th>Disputed</th><th>Buyer-agent verdict</th>
+      </tr></thead>
+      <tbody id="t-sellers"></tbody>
+    </table></div></div>
+  </section>
+
+  <footer>
+    <span>Read-only dashboard — autonomous red-teamer, buyer &amp; resolver agents do the transacting.</span>
+    <span class="upd"><span class="ico ico-sm" data-ico="refresh-cw"></span><span id="updated">connecting…</span></span>
+  </footer>
 </div>
 
 <script type="module">
@@ -87,6 +238,29 @@ import { sepolia } from "https://esm.sh/viem@2.21.0/chains";
 
 const CONTRACT = window.JAILBREAKERS_ADDRESS ?? "0x59eAe206c6E30798C21FB0fcA3b9E0Ac11dDABC8";
 const EXPLORER = "https://sepolia.etherscan.io";
+
+const ICONS = {
+  "unlock": '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>',
+  "target": '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+  "eye": '<path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/>',
+  "circle-check": '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
+  "trending-down": '<polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/>',
+  "ban": '<circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>',
+  "refresh-cw": '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
+  "external-link": '<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/>',
+  "triangle-alert": '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  "inbox": '<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
+  "lock": '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  "banknote": '<rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01"/><path d="M18 12h.01"/>',
+  "repeat": '<path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>',
+};
+function svg(name, cls) {
+  return `<svg class="ico ${cls || ""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ""}</svg>`;
+}
+document.querySelectorAll("[data-ico]").forEach((el) => {
+  const extra = [...el.classList].filter((c) => c !== "ico").join(" ");
+  el.innerHTML = svg(el.dataset.ico, el.classList.contains("mark") ? "" : extra);
+});
 
 const listingTuple = { type: "tuple", components: [
   { name: "seller", type: "address" }, { name: "status", type: "uint8" },
@@ -119,81 +293,137 @@ const STATUS = ["Open", "Revealed", "Invalid", "Resolved", "Expired", "Cancelled
 const CATEGORY = ["PromptInjection", "Jailbreak", "DataLeak", "Hallucination", "CapabilityGap"];
 const $ = (id) => document.getElementById(id);
 const short = (a) => a.slice(0, 6) + "…" + a.slice(-4);
-const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const pct = (bps) => (Number(bps) / 100).toFixed(0) + "%";
+const eth = (v) => Number(formatEther(v)).toLocaleString(undefined, { maximumFractionDigits: 4 });
 
 const link = $("contract-link");
-link.textContent = short(CONTRACT);
+link.innerHTML = `${short(CONTRACT)} ${svg("external-link", "ico-sm")}`;
 link.href = `${EXPLORER}/address/${CONTRACT}`;
 
-function rateBar(bps, color) {
-  return `<span class="rate"><span class="bar"><i style="width:${Math.min(100, Number(bps)/100)}%;background:${color}"></i></span>${pct(bps)}</span>`;
+let hasData = false;
+let loading = false;
+
+function setLoadingUI(on) {
+  const btn = $("refresh");
+  btn.disabled = on;
+  const s = btn.querySelector("svg");
+  if (s) s.classList.toggle("spin", on);
+}
+function skeletonRows(cols, n) {
+  let out = "";
+  for (let r = 0; r < (n || 4); r++) {
+    out += "<tr>";
+    for (let c = 0; c < cols; c++) out += `<td><div class="skel-bar" style="width:${40 + ((r + c) % 4) * 15}%"></div></td>`;
+    out += "</tr>";
+  }
+  return out;
+}
+const stateRow = (cols, icon, title, sub) =>
+  `<tr><td colspan="${cols}"><div class="state">${svg(icon)}<h4>${title}</h4><p>${sub}</p></div></td></tr>`;
+const errorRow = (cols, msg) =>
+  `<tr><td colspan="${cols}" style="padding:0"><div class="banner">${svg("triangle-alert")}<span>Couldn't reach the network — ${esc(msg)}</span><button type="button" onclick="window.__reload()">Retry</button></div></td></tr>`;
+const rateBar = (bps, color) =>
+  `<span class="rate"><span class="bar"><i style="width:${Math.min(100, Number(bps) / 100)}%;background:${color}"></i></span><span class="pctv">${pct(bps)}</span></span>`;
+
+function renderListings(listings, error) {
+  const body = $("t-listings"), cols = 13;
+  if (error && !hasData) return void (body.innerHTML = errorRow(cols, error));
+  if (loading && !hasData) return void (body.innerHTML = skeletonRows(cols));
+  if (listings.length === 0) return void (body.innerHTML = stateRow(cols, "inbox", "No findings yet", "Once a red-teamer lists a finding, it appears here."));
+  body.innerHTML = listings.slice().reverse().map((l) => {
+    const measured = l.status === 3
+      ? rateBar(l.measuredFailRateBps, l.reproduced ? "var(--green)" : "var(--red)")
+      : l.status === 2 ? `<span class="txt-red">garbage</span>` : `<span class="txt-dim">—</span>`;
+    return `<tr class="row">
+      <td class="id">${l.id}</td>
+      <td class="model">${esc(l.modelId)}</td>
+      <td class="cat">${CATEGORY[l.category] ?? l.category}</td>
+      <td class="claim"><div class="title">${esc(l.claimSummary)}</div><div class="meta2">grader ${esc(l.graderSpec)} · ${esc(l.suiteCID.slice(0, 20))}…</div></td>
+      <td>${rateBar(l.claimedFailRateBps, "var(--accent)")}</td>
+      <td>${measured}</td>
+      <td class="mono num">${l.trials}</td>
+      <td class="mono num">${eth(l.price)}</td>
+      <td class="mono num">${eth(l.stake)}</td>
+      <td class="mono num">${l.numBuyers}</td>
+      <td><span class="pill st-${l.status}">${STATUS[l.status]}</span></td>
+      <td class="txt-dim mono" style="font-size:11.5px">${new Date(Number(l.resolutionTimestamp) * 1000).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</td>
+      <td><a class="link" target="_blank" rel="noopener" href="${EXPLORER}/address/${l.seller}">${short(l.seller)} ${svg("external-link", "ico-sm")}</a></td>
+    </tr>`;
+  }).join("");
 }
 
-async function refresh() {
+function renderSellers(sellers, reps, error) {
+  const body = $("t-sellers"), cols = 8;
+  if (error && !hasData) return void (body.innerHTML = errorRow(cols, error));
+  if (loading && !hasData) return void (body.innerHTML = skeletonRows(cols, 2));
+  if (sellers.length === 0) return void (body.innerHTML = stateRow(cols, "inbox", "No sellers yet", "Reputation builds as findings are sold and resolved."));
+  body.innerHTML = sellers.map((s, i) => {
+    const r = reps[i], sold = Number(r.soldResolved);
+    const rate = sold ? Number(r.reproduced) / sold : null;
+    let verdict;
+    if (Number(r.disputed) > 0) verdict = `<span class="verdict txt-red">Blacklisted — shipped garbage</span>`;
+    else if (sold >= 3) verdict = rate >= 0.6 ? `<span class="verdict txt-green">Trusted — would buy</span>` : `<span class="verdict txt-red">Blocked — reproduction too low</span>`;
+    else verdict = `<span class="verdict txt-muted">Unproven — collateral rule</span>`;
+    return `<tr class="row">
+      <td><a class="link" target="_blank" rel="noopener" href="${EXPLORER}/address/${s}">${short(s)} ${svg("external-link", "ico-sm")}</a></td>
+      <td>${rate === null ? '<span class="txt-dim">n/a</span>' : rateBar(Math.round(rate * 10000), "var(--green)")}</td>
+      <td class="mono num txt-green">${r.reproduced}</td>
+      <td class="mono num txt-red">${r.failedToReproduce}</td>
+      <td class="mono num">${r.soldResolved}</td>
+      <td class="mono num">${r.totalListings}</td>
+      <td class="mono num ${Number(r.disputed) ? "txt-red" : "txt-dim"}">${r.disputed}</td>
+      <td>${verdict}</td>
+    </tr>`;
+  }).join("");
+}
+
+function setStat(k, v, on) {
+  const tile = document.querySelector(`.tile[data-k="${k}"]`);
+  tile.classList.toggle("skel", on);
+  if (!on) tile.querySelector(".val").textContent = v;
+}
+
+async function load() {
+  if (loading) return;
+  loading = true; setLoadingUI(true);
+  if (!hasData) {
+    renderListings([], null); renderSellers([], [], null);
+    ["listings", "revealed", "repro", "slashed", "invalid"].forEach((k) => setStat(k, "", true));
+  }
   try {
     const n = await client.readContract({ address: CONTRACT, abi, functionName: "nextListingId" });
     const listings = [];
     for (let i = 0n; i < n; i++)
       listings.push({ id: i, ...(await client.readContract({ address: CONTRACT, abi, functionName: "getListing", args: [i] })) });
 
-    $("m-listings").textContent = listings.length;
-    $("m-revealed").textContent = listings.filter((l) => l.status >= 1 && l.status < 4).length;
-    $("m-repro").textContent = listings.filter((l) => l.status === 3 && l.reproduced).length;
-    $("m-slashed").textContent = listings.filter((l) => l.status === 3 && !l.reproduced && l.payoutPerBuyer > 0n).length;
-    $("m-invalid").textContent = listings.filter((l) => l.status === 2).length;
-    $("m-updated").textContent = "updated " + new Date().toLocaleTimeString();
-
-    $("t-listings").tBodies[0].innerHTML = listings.length === 0
-      ? `<tr><td colspan="13" class="dim">no findings yet</td></tr>`
-      : listings.slice().reverse().map((l) => {
-          const measured = (l.status === 3)
-            ? rateBar(l.measuredFailRateBps, l.reproduced ? "var(--green)" : "var(--red)")
-            : l.status === 2 ? `<span class="bad">garbage</span>` : `<span class="dim">—</span>`;
-          return `<tr>
-            <td>${l.id}</td>
-            <td><b>${esc(l.modelId)}</b></td>
-            <td class="cat">${CATEGORY[l.category] ?? l.category}</td>
-            <td class="claim">${esc(l.claimSummary)}<br><span class="dim" style="font-size:11px">grader ${esc(l.graderSpec)} · ipfs ${esc(l.suiteCID.slice(0, 18))}…</span></td>
-            <td>${rateBar(l.claimedFailRateBps, "var(--accent)")}</td>
-            <td>${measured}</td>
-            <td>${l.trials}</td>
-            <td>${formatEther(l.price)}</td>
-            <td>${formatEther(l.stake)}</td>
-            <td>${l.numBuyers}</td>
-            <td><span class="pill s${l.status}">${STATUS[l.status]}</span></td>
-            <td class="dim">${new Date(Number(l.resolutionTimestamp) * 1000).toLocaleString()}</td>
-            <td><a class="mono" target="_blank" rel="noopener" href="${EXPLORER}/address/${l.seller}">${short(l.seller)}</a></td>
-          </tr>`;
-        }).join("");
+    setStat("listings", listings.length, false);
+    setStat("revealed", listings.filter((l) => l.status >= 1 && l.status < 4).length, false);
+    setStat("repro", listings.filter((l) => l.status === 3 && l.reproduced).length, false);
+    setStat("slashed", listings.filter((l) => l.status === 3 && !l.reproduced && l.payoutPerBuyer > 0n).length, false);
+    setStat("invalid", listings.filter((l) => l.status === 2).length, false);
 
     const sellers = [...new Set(listings.map((l) => l.seller))];
     const reps = await Promise.all(sellers.map((s) =>
       client.readContract({ address: CONTRACT, abi, functionName: "getSellerReputation", args: [s] })));
-    $("t-sellers").tBodies[0].innerHTML = sellers.length === 0
-      ? `<tr><td colspan="8" class="dim">no sellers yet</td></tr>`
-      : sellers.map((s, i) => {
-          const r = reps[i];
-          const sold = Number(r.soldResolved);
-          const rate = sold ? Number(r.reproduced) / sold : null;
-          const verdict = Number(r.disputed) > 0
-            ? `<span class="bad">BLACKLISTED — shipped garbage</span>`
-            : sold >= 3
-              ? (rate >= 0.6 ? `<span class="ok">TRUSTED — would buy</span>` : `<span class="bad">BLOCKED — reproduction too low</span>`)
-              : `<span class="dim">unproven — collateral rule (stake ≥ 2× price)</span>`;
-          return `<tr>
-            <td><a class="mono" target="_blank" rel="noopener" href="${EXPLORER}/address/${s}">${short(s)}</a></td>
-            <td>${rate === null ? '<span class="dim">n/a</span>' : rateBar(Math.round(rate*10000), "var(--green)")}</td>
-            <td class="ok">${r.reproduced}</td><td class="bad">${r.failedToReproduce}</td>
-            <td>${r.soldResolved}</td><td>${r.totalListings}</td><td class="bad">${r.disputed}</td>
-            <td>${verdict}</td></tr>`;
-        }).join("");
+
+    hasData = true;
+    renderListings(listings, null);
+    renderSellers(sellers, reps, null);
+    $("updated").textContent = "updated " + new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
   } catch (e) {
-    $("t-listings").tBodies[0].innerHTML = `<tr><td colspan="13" class="err">RPC error: ${esc(String(e.shortMessage ?? e.message ?? e))}</td></tr>`;
+    const msg = e.shortMessage || e.message || String(e);
+    renderListings([], msg); renderSellers([], [], msg);
+    if (!hasData) ["listings", "revealed", "repro", "slashed", "invalid"].forEach((k) => setStat(k, "!", false));
+    $("updated").textContent = "connection error";
+  } finally {
+    loading = false; setLoadingUI(false);
   }
 }
-refresh();
-setInterval(refresh, 15000);
+window.__reload = load;
+$("refresh").addEventListener("click", load);
+load();
+setInterval(load, 15000);
 </script>
 </body>
 </html>
