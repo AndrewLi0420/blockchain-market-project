@@ -13,12 +13,6 @@ a resolver that **actually re-runs the eval against the model** to settle every 
 | **Verified source** | [Sourcify](https://repo.sourcify.dev/11155111/0x59eAe206c6E30798C21FB0fcA3b9E0Ac11dDABC8/) (exact match) · [Blockscout](https://eth-sepolia.blockscout.com/address/0x59eAe206c6E30798C21FB0fcA3b9E0Ac11dDABC8?tab=contract) |
 | **Network** | Ethereum Sepolia testnet only — zero real value anywhere in this project |
 
-> This project began as a trading-signal marketplace and was deliberately re-verticaled to
-> model red-teaming. The reason is instructive and is the core of the design story below:
-> the mechanism's defining property — *the secret becomes public at point of sale* — is a
-> fatal flaw for trading alpha and a **feature** for security disclosure. Choose the vertical
-> that wants your mechanism, don't bolt a mechanism onto a vertical that fights it.
-
 ---
 
 ## The vertical
