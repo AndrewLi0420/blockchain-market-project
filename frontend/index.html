@@ -58,6 +58,20 @@
   h1 { font-size: 21px; font-weight: 700; letter-spacing: -0.03em; margin: 0; line-height: 1.1; }
   h1 .accent { color: var(--accent); }
   .tagline { color: var(--muted); font-size: 12.5px; margin: 3px 0 0; letter-spacing: -0.005em; }
+  .title-row { display: flex; align-items: center; gap: 7px; }
+  .info { position: relative; display: inline-flex; align-items: center; }
+  .info-btn { display: inline-flex; align-items: center; justify-content: center; padding: 0; margin: 0; border: none;
+    background: none; -webkit-appearance: none; appearance: none; line-height: 0; color: var(--dim); cursor: pointer;
+    border-radius: 50%; transition: color .15s; }
+  .info-btn .ico { width: 17px; height: 17px; display: block; }
+  .info-btn:hover, .info.open .info-btn { color: var(--accent); }
+  .info-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .info-pop { position: absolute; top: calc(100% + 8px); left: 0; width: 300px; max-width: 78vw; z-index: 20;
+    background: var(--surface); border: 1px solid var(--border-strong); border-radius: 10px; padding: 14px 15px;
+    box-shadow: 0 16px 40px rgba(0,0,0,.45); font-size: 12px; line-height: 1.55; color: var(--muted);
+    opacity: 0; visibility: hidden; transform: translateY(-4px); transition: opacity .15s, transform .15s, visibility .15s; }
+  .info-pop b { color: var(--text); font-weight: 600; }
+  .info:hover .info-pop, .info:focus-within .info-pop, .info.open .info-pop { opacity: 1; visibility: visible; transform: translateY(0); }
   .chain { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .net { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; color: var(--muted);
          padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; }
@@ -232,7 +246,16 @@
     <div class="brand">
       <span class="mark" data-ico="unlock"></span>
       <div>
-        <h1>JAIL<span class="accent">BREAKERS</span></h1>
+        <div class="title-row">
+          <h1>JAIL<span class="accent">BREAKERS</span></h1>
+          <span class="info" id="info">
+            <button class="info-btn" id="info-btn" type="button" aria-label="About Jailbreakers" aria-expanded="false"><span class="ico" data-ico="info"></span></button>
+            <span class="info-pop" role="tooltip">
+              <b>An on-chain market for proof that AI models fail.</b><br>
+              Red-teamers sell encrypted eval suites that make a named model misbehave — e.g. leak a secret. Buyers pay into escrow <b>before</b> seeing the prompts; the seller reveals the key, which both releases payment and publicly discloses the finding. A resolver then re-runs the suite against the model and <b>slashes claims that don't reproduce</b>, while the contract itself rejects malformed suites. Reputation is earned only on findings that actually sold.
+            </span>
+          </span>
+        </div>
         <p class="tagline">On-chain market for reproducible model-failure findings</p>
       </div>
     </div>
@@ -358,6 +381,7 @@ const ICONS = {
   "wallet": '<path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>',
   "x": '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
   "plus": '<path d="M5 12h14"/><path d="M12 5v14"/>',
+  "info": '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
 };
 function svg(name, cls) {
   return `<svg class="ico ${cls || ""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ""}</svg>`;
@@ -675,6 +699,17 @@ $("sell-modal").addEventListener("click", (e) => { if (e.target.id === "sell-mod
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") $("sell-modal").hidden = true; });
 $("sell-submit").addEventListener("click", submitSell);
 $("load-example").addEventListener("click", loadExample);
+
+/* info popover — hover/focus is CSS; this adds click-to-toggle for touch */
+const infoWrap = $("info"), infoBtn = $("info-btn");
+infoBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  const open = infoWrap.classList.toggle("open");
+  infoBtn.setAttribute("aria-expanded", open ? "true" : "false");
+});
+document.addEventListener("click", (e) => {
+  if (!infoWrap.contains(e.target)) { infoWrap.classList.remove("open"); infoBtn.setAttribute("aria-expanded", "false"); }
+});
 if (window.ethereum && window.ethereum.on) {
   window.ethereum.on("accountsChanged", (a) => { account = a[0] || null; setChip(account); });
   window.ethereum.on("chainChanged", () => { /* re-checked on next action */ });
