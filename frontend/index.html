@@ -144,6 +144,16 @@
   .link .ico { color: var(--dim); transition: color .15s; }
   .link:hover .ico { color: var(--accent); }
   .verdict { font-size: 12px; font-weight: 500; }
+  .cta { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; letter-spacing: .01em;
+    color: var(--accent); padding: 5px 11px; border-radius: 6px; white-space: nowrap;
+    border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); background: var(--accent-tint);
+    transition: background .15s, border-color .15s; cursor: pointer; }
+  .cta:hover { background: color-mix(in srgb, var(--accent) 22%, transparent); border-color: var(--accent); }
+  .cta .ico { color: currentColor; }
+  .cta.ghost { color: var(--muted); background: transparent; border-color: var(--border-strong); font-weight: 500; }
+  .cta.ghost:hover { color: var(--text); border-color: #4a453f; background: var(--surface-2); }
+  .cidlink { color: var(--dim); transition: color .15s; }
+  .cidlink:hover { color: var(--accent); }
 
   /* ---- states ---- */
   .state { padding: 44px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; }
@@ -186,6 +196,7 @@
     <div class="chain">
       <span class="net"><span class="dot"></span> Sepolia testnet</span>
       <a class="addr mono" id="contract-link" href="#" target="_blank" rel="noopener"></a>
+      <a class="cta" id="write-link" href="#" target="_blank" rel="noopener"><span class="ico" data-ico="wallet"></span> Write contract</a>
       <button class="refresh" id="refresh" type="button"><span class="ico" data-ico="refresh-cw"></span> Refresh</button>
     </div>
   </header>
@@ -205,11 +216,11 @@
   </div>
 
   <section>
-    <div class="sec-head"><h2>Findings</h2><span class="sec-note">Encrypted until disclosure · re-measured at resolution</span></div>
+    <div class="sec-head"><h2>Findings</h2><span class="sec-note">Encrypted until disclosure · use Buy to open the contract's write interface</span></div>
     <div class="card"><div class="scroll"><table>
       <thead><tr>
         <th>#</th><th>Model</th><th>Category</th><th>Public claim</th><th>Claimed</th><th>Measured</th>
-        <th>Trials</th><th>Price</th><th>Stake</th><th>Buyers</th><th>Status</th><th>Resolves</th><th>Seller</th>
+        <th>Trials</th><th>Price</th><th>Stake</th><th>Buyers</th><th>Status</th><th>Resolves</th><th>Seller</th><th>Action</th>
       </tr></thead>
       <tbody id="t-listings"></tbody>
     </table></div></div>
@@ -238,6 +249,9 @@ import { sepolia } from "https://esm.sh/viem@2.21.0/chains";
 
 const CONTRACT = window.JAILBREAKERS_ADDRESS ?? "0x59eAe206c6E30798C21FB0fcA3b9E0Ac11dDABC8";
 const EXPLORER = "https://sepolia.etherscan.io";
+const BLOCKSCOUT = "https://eth-sepolia.blockscout.com";
+const writeUrl = `${BLOCKSCOUT}/address/${CONTRACT}?tab=write_contract`;
+const ipfsUrl = (cid) => `https://dweb.link/ipfs/${cid}`;
 
 const ICONS = {
   "unlock": '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>',
@@ -253,6 +267,7 @@ const ICONS = {
   "lock": '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
   "banknote": '<rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01"/><path d="M18 12h.01"/>',
   "repeat": '<path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>',
+  "wallet": '<path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>',
 };
 function svg(name, cls) {
   return `<svg class="ico ${cls || ""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ""}</svg>`;
@@ -300,6 +315,7 @@ const eth = (v) => Number(formatEther(v)).toLocaleString(undefined, { maximumFra
 const link = $("contract-link");
 link.innerHTML = `${short(CONTRACT)} ${svg("external-link", "ico-sm")}`;
 link.href = `${EXPLORER}/address/${CONTRACT}`;
+$("write-link").href = writeUrl;
 
 let hasData = false;
 let loading = false;
@@ -327,19 +343,24 @@ const rateBar = (bps, color) =>
   `<span class="rate"><span class="bar"><i style="width:${Math.min(100, Number(bps) / 100)}%;background:${color}"></i></span><span class="pctv">${pct(bps)}</span></span>`;
 
 function renderListings(listings, error) {
-  const body = $("t-listings"), cols = 13;
+  const body = $("t-listings"), cols = 14;
   if (error && !hasData) return void (body.innerHTML = errorRow(cols, error));
   if (loading && !hasData) return void (body.innerHTML = skeletonRows(cols));
   if (listings.length === 0) return void (body.innerHTML = stateRow(cols, "inbox", "No findings yet", "Once a red-teamer lists a finding, it appears here."));
+  const nowSec = BigInt(Math.floor(Date.now() / 1000));
   body.innerHTML = listings.slice().reverse().map((l) => {
     const measured = l.status === 3
       ? rateBar(l.measuredFailRateBps, l.reproduced ? "var(--green)" : "var(--red)")
       : l.status === 2 ? `<span class="txt-red">garbage</span>` : `<span class="txt-dim">—</span>`;
+    const buyable = l.status === 0 && nowSec < l.resolutionTimestamp;
+    const action = buyable
+      ? `<a class="cta" target="_blank" rel="noopener" href="${writeUrl}" title="Connect a wallet on Blockscout, call buy(${l.id}) and send ${eth(l.price)} ETH">${svg("wallet", "ico-sm")} Buy ↗</a>`
+      : `<a class="cta ghost" target="_blank" rel="noopener" href="${writeUrl}" title="Open the contract's write interface (reveal / dispute / resolve / withdraw)">Contract ↗</a>`;
     return `<tr class="row">
       <td class="id">${l.id}</td>
       <td class="model">${esc(l.modelId)}</td>
       <td class="cat">${CATEGORY[l.category] ?? l.category}</td>
-      <td class="claim"><div class="title">${esc(l.claimSummary)}</div><div class="meta2">grader ${esc(l.graderSpec)} · ${esc(l.suiteCID.slice(0, 20))}…</div></td>
+      <td class="claim"><div class="title">${esc(l.claimSummary)}</div><div class="meta2">grader ${esc(l.graderSpec)} · <a class="cidlink" target="_blank" rel="noopener" href="${ipfsUrl(l.suiteCID)}" title="Encrypted suite on IPFS — ${esc(l.suiteCID)}">${esc(l.suiteCID.slice(0, 18))}…</a></div></td>
       <td>${rateBar(l.claimedFailRateBps, "var(--accent)")}</td>
       <td>${measured}</td>
       <td class="mono num">${l.trials}</td>
@@ -349,6 +370,7 @@ function renderListings(listings, error) {
       <td><span class="pill st-${l.status}">${STATUS[l.status]}</span></td>
       <td class="txt-dim mono" style="font-size:11.5px">${new Date(Number(l.resolutionTimestamp) * 1000).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</td>
       <td><a class="link" target="_blank" rel="noopener" href="${EXPLORER}/address/${l.seller}">${short(l.seller)} ${svg("external-link", "ico-sm")}</a></td>
+      <td>${action}</td>
     </tr>`;
   }).join("");
 }
