@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ProbeMarket</title>
+<style>
+  :root {
+    --bg: #0b0e14; --panel: #131722; --border: #232a3b; --text: #dbe2f0;
+    --dim: #8b94a7; --accent: #4f8cff; --green: #2ecc8f; --red: #ff5c74;
+    --amber: #ffb454; --purple: #b48cff;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 14px/1.5 ui-monospace, "SF Mono", Menlo, monospace; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 22px; margin: 0; letter-spacing: 1px; }
+  h1 .tag { color: var(--accent); }
+  .sub { color: var(--dim); margin: 4px 0 8px; font-size: 12px; }
+  .sub a { color: var(--accent); text-decoration: none; }
+  .blurb { color: var(--dim); font-size: 12px; max-width: 820px; margin: 0 0 18px; }
+  .blurb b { color: var(--text); font-weight: 600; }
+  .meta { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 20px; font-size: 12px; color: var(--dim); }
+  .meta b { color: var(--text); font-weight: 600; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 2px; color: var(--dim); margin: 28px 0 10px; }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; min-width: 900px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; vertical-align: top; }
+  td.claim { white-space: normal; min-width: 260px; }
+  th { color: var(--dim); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+  tr:last-child td { border-bottom: 0; }
+  .pill { display: inline-block; padding: 1px 8px; border-radius: 99px; font-size: 11px; border: 1px solid; }
+  .s0 { color: var(--accent); border-color: var(--accent); }
+  .s1 { color: var(--amber); border-color: var(--amber); }
+  .s2 { color: var(--red); border-color: var(--red); }
+  .s3 { color: var(--green); border-color: var(--green); }
+  .s4, .s5 { color: var(--dim); border-color: var(--dim); }
+  .cat { color: var(--purple); font-size: 11px; }
+  .ok { color: var(--green); } .bad { color: var(--red); }
+  a.mono { color: var(--accent); text-decoration: none; }
+  .err { color: var(--red); padding: 12px; }
+  .dim { color: var(--dim); }
+  .rate { display: inline-flex; align-items: center; gap: 6px; }
+  .bar { height: 6px; width: 90px; background: var(--border); border-radius: 3px; overflow: hidden; display: inline-block; vertical-align: middle; }
+  .bar i { display: block; height: 100%; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>PROBE<span class="tag">MARKET</span></h1>
+  <div class="sub">on-chain marketplace for reproducible model-failure findings · hashlock disclosure · staked, re-measured claims ·
+    contract <a id="contract-link" class="mono" href="#" target="_blank" rel="noopener"></a> on Sepolia</div>
+  <p class="blurb">Red-teamers sell <b>encrypted eval suites</b> that make a named model exhibit a failure (a data leak,
+    a jailbreak, a hallucination). Buyers — AI labs and deployers — pay <b>before</b> seeing the prompts. Payment releases
+    on the seller's on-chain key reveal (that reveal is coordinated disclosure). After the resolution date a resolver
+    <b>re-runs the suite against the model</b> and reports the measured failure rate: overfitted findings get their stake
+    slashed and buyers rebated; malformed findings are refunded from stake via an on-chain dispute the contract adjudicates itself.
+    Reputation counts only <b>sold</b> findings, so it can't be farmed.</p>
+  <div class="meta">
+    <span>findings <b id="m-listings">—</b></span>
+    <span>disclosed <b id="m-revealed">—</b></span>
+    <span>reproduced <b id="m-repro">—</b></span>
+    <span>slashed <b id="m-slashed">—</b></span>
+    <span>disputed <b id="m-invalid">—</b></span>
+    <span class="dim" id="m-updated"></span>
+  </div>
+
+  <h2>Findings</h2>
+  <div class="card"><table id="t-listings">
+    <thead><tr><th>#</th><th>Model</th><th>Category</th><th class="claim">Public claim</th><th>Claimed</th><th>Measured</th><th>Trials</th><th>Price</th><th>Stake</th><th>Buyers</th><th>Status</th><th>Resolves</th><th>Seller</th></tr></thead>
+    <tbody><tr><td colspan="13" class="dim">loading…</td></tr></tbody>
+  </table></div>
+
+  <h2>Red-teamer reputation</h2>
+  <div class="card"><table id="t-sellers">
+    <thead><tr><th>Seller</th><th>Reproduction rate</th><th>Reproduced</th><th>Failed</th><th>Sold+resolved</th><th>Listed</th><th>Disputed</th><th>Buyer-agent verdict</th></tr></thead>
+    <tbody><tr><td colspan="8" class="dim">loading…</td></tr></tbody>
+  </table></div>
+
+  <p class="dim" style="font-size:12px">Read-only dashboard — the autonomous red-teamer / buyer / resolver agents do the transacting.
+     Encrypted suites live on IPFS (CID on-chain); prompts appear only after the on-chain reveal. Auto-refreshes every 15s.</p>
+</div>
+
+<script type="module">
+import { createPublicClient, http, fallback, formatEther } from "https://esm.sh/viem@2.21.0";
+import { sepolia } from "https://esm.sh/viem@2.21.0/chains";
+
+const CONTRACT = window.PROBE_MARKET_ADDRESS ?? "0x59eAe206c6E30798C21FB0fcA3b9E0Ac11dDABC8";
+const EXPLORER = "https://sepolia.etherscan.io";
+
+const listingTuple = { type: "tuple", components: [
+  { name: "seller", type: "address" }, { name: "status", type: "uint8" },
+  { name: "category", type: "uint8" }, { name: "resolutionTimestamp", type: "uint64" },
+  { name: "claimedFailRateBps", type: "uint256" }, { name: "trials", type: "uint256" },
+  { name: "modelId", type: "string" }, { name: "graderSpec", type: "string" },
+  { name: "claimSummary", type: "string" }, { name: "suiteCID", type: "string" },
+  { name: "suiteHash", type: "bytes32" }, { name: "keyHash", type: "bytes32" },
+  { name: "revealedKey", type: "bytes32" }, { name: "revealedAt", type: "uint64" },
+  { name: "price", type: "uint256" }, { name: "stake", type: "uint256" },
+  { name: "numBuyers", type: "uint256" }, { name: "payoutPerBuyer", type: "uint256" },
+  { name: "measuredFailRateBps", type: "uint256" }, { name: "reproduced", type: "bool" },
+]};
+const repTuple = { type: "tuple", components: [
+  { name: "totalListings", type: "uint64" }, { name: "soldResolved", type: "uint64" },
+  { name: "reproduced", type: "uint64" }, { name: "failedToReproduce", type: "uint64" },
+  { name: "disputed", type: "uint64" },
+]};
+const abi = [
+  { type: "function", name: "nextListingId", stateMutability: "view", inputs: [], outputs: [{ type: "uint256" }] },
+  { type: "function", name: "getListing", stateMutability: "view", inputs: [{ type: "uint256" }], outputs: [listingTuple] },
+  { type: "function", name: "getSellerReputation", stateMutability: "view", inputs: [{ type: "address" }], outputs: [repTuple] },
+];
+
+const client = createPublicClient({ chain: sepolia, transport: fallback([
+  http("https://ethereum-sepolia-rpc.publicnode.com"), http("https://sepolia.drpc.org"),
+]) });
+
+const STATUS = ["Open", "Revealed", "Invalid", "Resolved", "Expired", "Cancelled"];
+const CATEGORY = ["PromptInjection", "Jailbreak", "DataLeak", "Hallucination", "CapabilityGap"];
+const $ = (id) => document.getElementById(id);
+const short = (a) => a.slice(0, 6) + "…" + a.slice(-4);
+const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const pct = (bps) => (Number(bps) / 100).toFixed(0) + "%";
+
+const link = $("contract-link");
+link.textContent = short(CONTRACT);
+link.href = `${EXPLORER}/address/${CONTRACT}`;
+
+function rateBar(bps, color) {
+  return `<span class="rate"><span class="bar"><i style="width:${Math.min(100, Number(bps)/100)}%;background:${color}"></i></span>${pct(bps)}</span>`;
+}
+
+async function refresh() {
+  try {
+    const n = await client.readContract({ address: CONTRACT, abi, functionName: "nextListingId" });
+    const listings = [];
+    for (let i = 0n; i < n; i++)
+      listings.push({ id: i, ...(await client.readContract({ address: CONTRACT, abi, functionName: "getListing", args: [i] })) });
+
+    $("m-listings").textContent = listings.length;
+    $("m-revealed").textContent = listings.filter((l) => l.status >= 1 && l.status < 4).length;
+    $("m-repro").textContent = listings.filter((l) => l.status === 3 && l.reproduced).length;
+    $("m-slashed").textContent = listings.filter((l) => l.status === 3 && !l.reproduced && l.payoutPerBuyer > 0n).length;
+    $("m-invalid").textContent = listings.filter((l) => l.status === 2).length;
+    $("m-updated").textContent = "updated " + new Date().toLocaleTimeString();
+
+    $("t-listings").tBodies[0].innerHTML = listings.length === 0
+      ? `<tr><td colspan="13" class="dim">no findings yet</td></tr>`
+      : listings.slice().reverse().map((l) => {
+          const measured = (l.status === 3)
+            ? rateBar(l.measuredFailRateBps, l.reproduced ? "var(--green)" : "var(--red)")
+            : l.status === 2 ? `<span class="bad">garbage</span>` : `<span class="dim">—</span>`;
+          return `<tr>
+            <td>${l.id}</td>
+            <td><b>${esc(l.modelId)}</b></td>
+            <td class="cat">${CATEGORY[l.category] ?? l.category}</td>
+            <td class="claim">${esc(l.claimSummary)}<br><span class="dim" style="font-size:11px">grader ${esc(l.graderSpec)} · ipfs ${esc(l.suiteCID.slice(0, 18))}…</span></td>
+            <td>${rateBar(l.claimedFailRateBps, "var(--accent)")}</td>
+            <td>${measured}</td>
+            <td>${l.trials}</td>
+            <td>${formatEther(l.price)}</td>
+            <td>${formatEther(l.stake)}</td>
+            <td>${l.numBuyers}</td>
+            <td><span class="pill s${l.status}">${STATUS[l.status]}</span></td>
+            <td class="dim">${new Date(Number(l.resolutionTimestamp) * 1000).toLocaleString()}</td>
+            <td><a class="mono" target="_blank" rel="noopener" href="${EXPLORER}/address/${l.seller}">${short(l.seller)}</a></td>
+          </tr>`;
+        }).join("");
+
+    const sellers = [...new Set(listings.map((l) => l.seller))];
+    const reps = await Promise.all(sellers.map((s) =>
+      client.readContract({ address: CONTRACT, abi, functionName: "getSellerReputation", args: [s] })));
+    $("t-sellers").tBodies[0].innerHTML = sellers.length === 0
+      ? `<tr><td colspan="8" class="dim">no sellers yet</td></tr>`
+      : sellers.map((s, i) => {
+          const r = reps[i];
+          const sold = Number(r.soldResolved);
+          const rate = sold ? Number(r.reproduced) / sold : null;
+          const verdict = Number(r.disputed) > 0
+            ? `<span class="bad">BLACKLISTED — shipped garbage</span>`
+            : sold >= 3
+              ? (rate >= 0.6 ? `<span class="ok">TRUSTED — would buy</span>` : `<span class="bad">BLOCKED — reproduction too low</span>`)
+              : `<span class="dim">unproven — collateral rule (stake ≥ 2× price)</span>`;
+          return `<tr>
+            <td><a class="mono" target="_blank" rel="noopener" href="${EXPLORER}/address/${s}">${short(s)}</a></td>
+            <td>${rate === null ? '<span class="dim">n/a</span>' : rateBar(Math.round(rate*10000), "var(--green)")}</td>
+            <td class="ok">${r.reproduced}</td><td class="bad">${r.failedToReproduce}</td>
+            <td>${r.soldResolved}</td><td>${r.totalListings}</td><td class="bad">${r.disputed}</td>
+            <td>${verdict}</td></tr>`;
+        }).join("");
+  } catch (e) {
+    $("t-listings").tBodies[0].innerHTML = `<tr><td colspan="13" class="err">RPC error: ${esc(String(e.shortMessage ?? e.message ?? e))}</td></tr>`;
+  }
+}
+refresh();
+setInterval(refresh, 15000);
+</script>
+</body>
+</html>

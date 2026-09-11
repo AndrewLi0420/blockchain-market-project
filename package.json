@@ -1,0 +1,14 @@
+{
+  "name": "signal-bazaar",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "seller": "bun agents/seller-agent.ts",
+    "buyer": "bun agents/buyer-agent.ts",
+    "resolver": "bun agents/resolver-agent.ts"
+  },
+  "dependencies": {
+    "multiformats": "^13.3.0",
+    "viem": "^2.21.0"
+  }
+}

@@ -1,0 +1,7 @@
+.env
+out/
+cache/
+broadcast/
+node_modules/
+ipfs-store/
+agents/*.state.json
