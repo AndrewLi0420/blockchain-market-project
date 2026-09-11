@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ProbeMarket</title>
+<title>Jailbreakers</title>
 <style>
   :root {
     --bg: #0b0e14; --panel: #131722; --border: #232a3b; --text: #dbe2f0;
@@ -47,7 +47,7 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>PROBE<span class="tag">MARKET</span></h1>
+  <h1>JAIL<span class="tag">BREAKERS</span></h1>
   <div class="sub">on-chain marketplace for reproducible model-failure findings · hashlock disclosure · staked, re-measured claims ·
     contract <a id="contract-link" class="mono" href="#" target="_blank" rel="noopener"></a> on Sepolia</div>
   <p class="blurb">Red-teamers sell <b>encrypted eval suites</b> that make a named model exhibit a failure (a data leak,
@@ -85,7 +85,7 @@
 import { createPublicClient, http, fallback, formatEther } from "https://esm.sh/viem@2.21.0";
 import { sepolia } from "https://esm.sh/viem@2.21.0/chains";
 
-const CONTRACT = window.PROBE_MARKET_ADDRESS ?? "0x59eAe206c6E30798C21FB0fcA3b9E0Ac11dDABC8";
+const CONTRACT = window.JAILBREAKERS_ADDRESS ?? "0x59eAe206c6E30798C21FB0fcA3b9E0Ac11dDABC8";
 const EXPLORER = "https://sepolia.etherscan.io";
 
 const listingTuple = { type: "tuple", components: [

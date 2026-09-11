@@ -1,4 +1,4 @@
-# ProbeMarket
+# Jailbreakers
 
 An on-chain marketplace where **red-teamers sell reproducible model-failure findings** to
 **autonomous buyer agents that pay before they can see the exploit** — made credible by a
@@ -192,8 +192,8 @@ reflects it" are different guarantees on a multi-node RPC.
 ## Repository layout
 
 ```
-src/ProbeMarket.sol         the whole marketplace (~330 lines, no dependencies)
-test/ProbeMarket.t.sol      31 Foundry tests: disclosure, refunds, disputes, resolution,
+src/Jailbreakers.sol         the whole marketplace (~330 lines, no dependencies)
+test/Jailbreakers.t.sol      31 Foundry tests: disclosure, refunds, disputes, resolution,
                             slash math, reputation (incl. the no-farm guard), access control
 script/Deploy.s.sol         deployment script
 agents/model.ts             the shared reference model + graders + attack generators —
@@ -218,7 +218,7 @@ cp .env.example .env              # fill in keys (testnet-only throwaways!)
 source .env                       # deploy (Sourcify/Blockscout verify with no API key)
 forge script script/Deploy.s.sol --rpc-url $SEPOLIA_RPC_URL \
   --private-key $DEPLOYER_PRIVATE_KEY --broadcast
-# put the printed address into .env as PROBE_MARKET_ADDRESS
+# put the printed address into .env as JAILBREAKERS_ADDRESS
 
 bun agents/seller-agent.ts        # lists findings; modes via SELLER_MODES=honest,overfit,garbage
 bun agents/buyer-agent.ts         # buys, reproduces, disputes garbage, claims rebates

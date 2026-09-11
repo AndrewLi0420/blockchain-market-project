@@ -22,14 +22,14 @@ import * as rawCodec from "multiformats/codecs/raw";
 import { sha256 as mfSha256 } from "multiformats/hashes/sha2";
 import fs from "node:fs";
 import path from "node:path";
-import artifact from "../out/ProbeMarket.sol/ProbeMarket.json";
+import artifact from "../out/Jailbreakers.sol/Jailbreakers.json";
 import { CategoryName } from "./model";
 
 export const abi = artifact.abi;
 export const EXPLORER = "https://sepolia.etherscan.io";
 
-export const CONTRACT = (process.env.PROBE_MARKET_ADDRESS ?? "") as Address;
-if (!CONTRACT) throw new Error("PROBE_MARKET_ADDRESS not set in .env (deploy first)");
+export const CONTRACT = (process.env.JAILBREAKERS_ADDRESS ?? "") as Address;
+if (!CONTRACT) throw new Error("JAILBREAKERS_ADDRESS not set in .env (deploy first)");
 
 const primaryRpc = process.env.SEPOLIA_RPC_URL ?? "https://ethereum-sepolia-rpc.publicnode.com";
 const transport = primaryRpc.includes("127.0.0.1") || primaryRpc.includes("localhost")
@@ -104,7 +104,7 @@ export function findEvent(receipt: any, eventName: string): any | undefined {
 
 // ------------------------------------------------------- eval-suite payload
 
-// The secret IP is the prompt suite. Schema matches ProbeMarket.parseSuite:
+// The secret IP is the prompt suite. Schema matches Jailbreakers.parseSuite:
 export const SUITE_PARAMS = parseAbiParameters("string modelId, uint8 category, string[] prompts");
 
 export type Suite = { modelId: string; category: number; prompts: string[] };
@@ -118,7 +118,7 @@ export function decodeSuite(pt: Uint8Array): Suite {
   return { modelId, category, prompts: prompts as string[] };
 }
 
-/** Mirrors ProbeMarket._validEval — run off-chain before deciding to dispute. */
+/** Mirrors Jailbreakers._validEval — run off-chain before deciding to dispute. */
 export function validateSuite(
   pt: Uint8Array,
   claim: { modelId: string; category: number; trials: bigint },

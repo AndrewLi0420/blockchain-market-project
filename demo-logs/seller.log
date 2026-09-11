@@ -1,0 +1,29 @@
+[01:43:24] [seller] red-teamer 0x22dCba32Fa7FbC7ce31dA6BbB74F5fAB9Dc2aF84 | contract 0x59eAe206c6E30798C21FB0fcA3b9E0Ac11dDABC8
+[01:43:24] [seller] target sentinel-v1 | price 0.0005 ETH, stake 0.001 ETH (refund capacity: 2 buyers)
+[01:43:24] [seller] round 1 [HONEST]: crafted 8-prompt suite; probed sentinel-v1 -> real leak rate 100%, claiming 95%
+[01:43:24] [seller] encrypted suite (1472 bytes) with keccak-CTR; keyHash=0xca60c43c5726d1b9…
+[01:43:24] [seller] pinned encrypted suite to IPFS: bafkreie2ybdx3cndr32kmwg2anis223yvwnwrkin4mmvr7n2wogqwqmxny (local-store, kubo)
+[01:43:37] [seller] listed #0 (staked 0.001 ETH, resolves 2026-09-11T01:50:24.000Z) tx https://sepolia.etherscan.io/tx/0x3e690df151bf4dca7de6fa968ec5287274c6b97f52472d3ec1a84e8b4688e6ee
+[01:43:48] [seller] #0: 1 buyer(s) escrowed — revealing suite (disclosure)
+[01:44:02] [seller] #0: suite revealed on-chain, escrow released (contract balance 0.0005 ETH) tx https://sepolia.etherscan.io/tx/0xf5925e83f3c8f1355536940bb7131190179d39293c603422abeb213213d16cfa
+[01:44:02] [seller] round 2 [OVERFIT]: crafted 8-prompt suite; probed sentinel-v1 -> real leak rate 25%, claiming 90%
+[01:44:02] [seller] encrypted suite (1344 bytes) with keccak-CTR; keyHash=0x94d7d7d535e0c16a…
+[01:44:02] [seller] pinned encrypted suite to IPFS: bafkreia3r57ytbvgg4ljmxzzb2hamqg5w4luykuv7fi5q53q7f2emyjbly (local-store, kubo)
+[01:44:15] [seller] listed #1 (staked 0.001 ETH, resolves 2026-09-11T01:51:02.000Z) tx https://sepolia.etherscan.io/tx/0xa939399c7d63ed521073a5261aaddbe0f576091233a214fadbf1229cd2bbd2a2
+[01:44:25] [seller] #1: 1 buyer(s) escrowed — revealing suite (disclosure)
+[01:44:52] [seller] #1: suite revealed on-chain, escrow released (contract balance 0.001 ETH) tx https://sepolia.etherscan.io/tx/0xba4501784feb2d8ee981c9ba6b37afe4dd0f1d9b49294378fb0f0c9fffd12d85
+[01:44:52] [seller] round 3 [GARBAGE]: listing non-eval bytes behind claim "sentinel-v1 data-leak on obfuscated injection >=90%" (demonstrates the on-chain dispute)
+[01:44:52] [seller] encrypted suite (128 bytes) with keccak-CTR; keyHash=0xeae74e028c167549…
+[01:44:52] [seller] pinned encrypted suite to IPFS: bafkreiahn4snqdshh4r6ry5ifpqj7jr737mqiepe2jkuupf2xasaowi4fq (local-store, kubo)
+[01:45:01] [seller] listed #2 (staked 0.001 ETH, resolves 2026-09-11T01:51:52.000Z) tx https://sepolia.etherscan.io/tx/0xab0540a9ab4146b1e0808560f4c2f4fffa86e7b1f914ef2218a872cf1de99414
+[01:45:16] [seller] #2: 1 buyer(s) escrowed — revealing suite (disclosure)
+[01:45:26] [seller] #2: suite revealed on-chain, escrow released (contract balance 0.0015 ETH) tx https://sepolia.etherscan.io/tx/0x991d5049f2ab8b43d11ef6822b1956231cb6e88bbcd7eff618209583c56bb63a
+[01:45:26] [seller] round 4 [HONEST]: crafted 8-prompt suite; probed sentinel-v1 -> real leak rate 100%, claiming 95%
+[01:45:26] [seller] encrypted suite (1472 bytes) with keccak-CTR; keyHash=0xad1b9ab4cd11665c…
+[01:45:26] [seller] pinned encrypted suite to IPFS: bafkreigu5g3jbe6xps7nindvsgyhujcao2iegglejlbraunk7de65mciyi (local-store, kubo)
+[01:45:39] [seller] listed #3 (staked 0.001 ETH, resolves 2026-09-11T01:52:26.000Z) tx https://sepolia.etherscan.io/tx/0x1441497912fb95f41e5f57091fac8d0284bf83381bdbd8a731f56cd366edf3e2
+[01:46:26] [seller] #3: no buyers within 45s — revealing anyway to keep the demo moving
+[01:46:40] [seller] #3: suite revealed on-chain, escrow released (contract balance 0.002 ETH) tx https://sepolia.etherscan.io/tx/0x713b85684edc924c8268f650b4668a4b0137790478a3080a2ac24c8d6cbfc7f4
+[01:46:40] [seller] all 4 rounds listed — waiting for resolutions to settle stake…
+[01:53:03] [seller] withdrew 0.0045 ETH (escrowed sales + returned stake) tx https://sepolia.etherscan.io/tx/0x938eb7ccda5ae2626e1f4effbef8b0e6ba40818ada2a1076c3bb12c2083b8aea
+[01:53:03] [seller] final reputation: 4 listed, 2 sold+resolved, 1 reproduced, 1 failed, 1 disputed

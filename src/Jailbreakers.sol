@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
-/// @title ProbeMarket — a marketplace for reproducible model-failure findings
+/// @title Jailbreakers — a marketplace for reproducible model-failure findings
 ///
 /// Sellers are red-teamers/eval researchers. A listing is a falsifiable, dated
 /// claim about a *named model snapshot*: "model M exhibits failure behaviour C at
@@ -27,7 +27,7 @@ pragma solidity ^0.8.26;
 ///
 /// Because reveal-after-payment is coordinated disclosure (the buyer patches; the
 /// finding then becomes a public eval), on-chain reveal is a feature here, not a leak.
-contract ProbeMarket {
+contract Jailbreakers {
     enum Category {
         PromptInjection,
         Jailbreak,
